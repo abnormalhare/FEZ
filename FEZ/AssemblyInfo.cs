@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("FezGame")]
 [assembly: AssemblyCompany("")]
 [assembly: ComVisible(false)]
-[assembly: Extension]
+// [assembly: Extension]
 [assembly: AssemblyTitle("FezGame")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]

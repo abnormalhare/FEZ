@@ -1053,15 +1053,15 @@ namespace FezGame.Components
 
     private void HandleSelection()
     {
+      Viewport viewport = this.GraphicsDevice.Viewport;
+      float num = viewport.Width / (1280f * SettingsManager.GetViewScale(this.GraphicsDevice));
+      float OriginalRadius = 17.82f * num;
+
       if (!this.zooming && this.Face == MenuCubeFace.CubeShards || this.Face == MenuCubeFace.AntiCubes)
         return;
+
       if (this.TomeZoom && this.InputManager.GrabThrow == FezButtonState.Pressed || this.TomeOpen && this.InputManager.CancelTalk == FezButtonState.Pressed)
       {
-        // ISSUE: object of a compiler-generated type is created
-        // ISSUE: variable of a compiler-generated type
-        MenuCube.\u003C\u003Ec__DisplayClass31 cDisplayClass31_1 = new MenuCube.\u003C\u003Ec__DisplayClass31();
-        // ISSUE: reference to a compiler-generated field
-        cDisplayClass31_1.\u003C\u003E4__this = this;
         this.TomeOpen = !this.TomeOpen;
         if (this.TomeOpen)
         {
@@ -1071,45 +1071,49 @@ namespace FezGame.Components
         else
         {
           this.GameState.DisallowRotation = false;
-          for (int index = this.TomePageIndex - 1; index >= 0; --index)
+          for (int index = this.TomePageIndex - 1; index >= 0; index--)
           {
-            // ISSUE: object of a compiler-generated type is created
-            // ISSUE: variable of a compiler-generated type
-            MenuCube.\u003C\u003Ec__DisplayClass33 cDisplayClass33 = new MenuCube.\u003C\u003Ec__DisplayClass33();
-            // ISSUE: reference to a compiler-generated field
-            cDisplayClass33.CS\u0024\u003C\u003E8__locals32 = cDisplayClass31_1;
-            // ISSUE: reference to a compiler-generated field
-            cDisplayClass33.i1 = index;
-            // ISSUE: reference to a compiler-generated method
-            // ISSUE: reference to a compiler-generated method
-            Waiters.Interpolate(0.25 + (double) (8 - index) / 8.0 * 0.150000005960464, new Action<float>(cDisplayClass33.\u003CHandleSelection\u003Eb__2b), new Action(cDisplayClass33.\u003CHandleSelection\u003Eb__2c));
+            Waiters.Interpolate(0.25f + (float)(8 - index) / 8f * 0.15f, delegate(float s)
+            {
+              s = Easing.EaseOut(FezMath.Saturate(1f - s), EasingType.Quadratic);
+              this.TomePages.Groups[index].Rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, (((float)Math.PI * -3f) / 4f) * s * (1f - (index / 8f * 0.05f)));
+            }, delegate
+            {
+              this.TomePages.Groups[index].Rotation = Quaternion.Identity;
+              if (index != 8)
+                this.TomePages.Groups[index + 1].Enabled = false;
+            });
           }
           this.TomePageIndex = 0;
         }
-        // ISSUE: reference to a compiler-generated field
-        cDisplayClass31_1.thisWaiter = (IWaiter) null;
-        // ISSUE: variable of a compiler-generated type
-        MenuCube.\u003C\u003Ec__DisplayClass31 cDisplayClass31_2 = cDisplayClass31_1;
-        MenuCube menuCube = this;
-        double durationSeconds = this.TomeOpen ? 0.875 : 0.425000011920929;
-        IWaiter waiter1;
-        // ISSUE: reference to a compiler-generated method
-        // ISSUE: reference to a compiler-generated method
-        IWaiter waiter2 = waiter1 = Waiters.Interpolate(durationSeconds, new Action<float>(cDisplayClass31_1.\u003CHandleSelection\u003Eb__2d), new Action(cDisplayClass31_1.\u003CHandleSelection\u003Eb__2e));
-        menuCube.tomeOpenWaiter = waiter1;
-        IWaiter waiter3 = waiter2;
-        // ISSUE: reference to a compiler-generated field
-        cDisplayClass31_2.thisWaiter = waiter3;
+        IWaiter thisWaiter = null;
+        thisWaiter = this.tomeOpenWaiter = Waiters.Interpolate(this.TomeOpen ? 0.875f : 0.425f, delegate (float s)
+        {
+          if (this.tomeOpenWaiter == thisWaiter)
+          {
+            if (!this.TomeOpen)
+              s = 1f - s;
+            s = Easing.EaseOut(FezMath.Saturate(s), EasingType.Quadratic);
+
+            DoTomeOpen(this.TomeCoverAo, s);
+          }
+        }, delegate
+        {
+          if (this.tomeOpenWaiter == thisWaiter)
+          {
+            DoTomeOpen(this.TomeCoverAo, this.TomeOpen ? 1 : 0);
+            this.tomeOpenWaiter = null;
+          }
+        });
       }
       else
       {
-        if (this.TomeOpen || this.zooming || (this.GameState.MenuCubeIsZoomed || this.InputManager.Jump != FezButtonState.Pressed) && (!this.GameState.MenuCubeIsZoomed || this.InputManager.Back != FezButtonState.Pressed && this.InputManager.CancelTalk != FezButtonState.Pressed))
-          return;
-        // ISSUE: object of a compiler-generated type is created
-        // ISSUE: variable of a compiler-generated type
-        MenuCube.\u003C\u003Ec__DisplayClass36 cDisplayClass36 = new MenuCube.\u003C\u003Ec__DisplayClass36();
-        // ISSUE: reference to a compiler-generated field
-        cDisplayClass36.\u003C\u003E4__this = this;
+        if (this.TomeOpen || this.zooming || (
+            this.GameState.MenuCubeIsZoomed || this.InputManager.Jump != FezButtonState.Pressed
+          ) && (
+            !this.GameState.MenuCubeIsZoomed || this.InputManager.Back != FezButtonState.Pressed && this.InputManager.CancelTalk != FezButtonState.Pressed
+          )) { return; }
+
         this.zoomed = !this.zoomed;
         if (this.zoomed)
         {
@@ -1123,86 +1127,96 @@ namespace FezGame.Components
         {
           this.AntiCubes.Blending = this.GoldenCubes.Blending = new BlendingMode?(BlendingMode.Opaque);
           this.CameraManager.OriginalDirection = this.OriginalDirection;
-          this.GameState.ShowScroll(MenuCubeFaceExtensions.GetTitle(this.Face), 0.0f, true);
+          this.GameState.ShowScroll(this.Face.GetTitle(), 0f, onTop: true);
           this.TomeOpen = false;
         }
-        // ISSUE: reference to a compiler-generated field
-        cDisplayClass36.oid = (int) ((double) this.HighlightPosition[this.zoomedFace].X + (double) this.HighlightPosition[this.zoomedFace].Y * Math.Sqrt((double) MenuCubeFaceExtensions.GetCount(this.zoomedFace)));
+
+        int oid = (int) (this.HighlightPosition[this.zoomedFace].X + this.HighlightPosition[this.zoomedFace].Y * Math.Sqrt(MenuCubeFaceExtensions.GetCount(this.zoomedFace)));
         this.zooming = true;
         switch (this.zoomedFace)
         {
-          case MenuCubeFace.Maps:
-            // ISSUE: object of a compiler-generated type is created
-            // ISSUE: variable of a compiler-generated type
-            MenuCube.\u003C\u003Ec__DisplayClass38 cDisplayClass38 = new MenuCube.\u003C\u003Ec__DisplayClass38();
-            // ISSUE: reference to a compiler-generated field
-            cDisplayClass38.CS\u0024\u003C\u003E8__locals37 = cDisplayClass36;
-            // ISSUE: reference to a compiler-generated field
-            if (this.GameState.SaveData.Maps.Count <= cDisplayClass36.oid)
+          case MenuCubeFace.Artifacts:
             {
-              this.zooming = false;
-              this.zoomed = false;
-              this.GameState.MenuCubeIsZoomed = false;
-              return;
-            }
-            else
-            {
-              if (this.zoomed)
+              int count = this.ArtifactAOs.Count;
+              if (GameState.SaveData.Artifacts.Contains(ActorType.Tome))
+                count--;
+
+              if (count <= oid)
               {
-                for (int index = 0; index < 6; ++index)
-                {
-                  // ISSUE: reference to a compiler-generated field
-                  this.Maps.Groups[cDisplayClass36.oid * 6 + index].Material = new Material();
-                  // ISSUE: reference to a compiler-generated field
-                  this.originalMapPositions[index] = this.Maps.Groups[cDisplayClass36.oid * 6 + index].Position;
-                }
+                this.zooming = false;
+                this.zoomed = false;
+                this.GameState.MenuCubeIsZoomed = false;
+                return;
               }
-              Vector2 vector2 = this.HighlightPosition[this.zoomedFace];
-              // ISSUE: reference to a compiler-generated field
-              cDisplayClass38.middleOffset = (float) ((double) vector2.X * (double) MenuCubeFaceExtensions.GetSpacing(this.zoomedFace) / 16.0) * MenuCubeFaceExtensions.GetRight(this.zoomedFace) + (float) ((double) vector2.Y * (double) MenuCubeFaceExtensions.GetSpacing(this.zoomedFace) / 16.0) * Vector3.Down + (Vector3.Down + MenuCubeFaceExtensions.GetRight(this.zoomedFace)) * (float) MenuCubeFaceExtensions.GetOffset(this.zoomedFace) / 16f;
-              // ISSUE: reference to a compiler-generated field
-              // ISSUE: reference to a compiler-generated field
-              cDisplayClass38.middleOffset = this.AoInstance.ArtObject.Size / 2f * (MenuCubeFaceExtensions.GetRight(this.zoomedFace) + Vector3.Down) - cDisplayClass38.middleOffset;
-              // ISSUE: reference to a compiler-generated method
-              // ISSUE: reference to a compiler-generated method
-              Waiters.Interpolate(0.25, new Action<float>(cDisplayClass38.\u003CHandleSelection\u003Eb__2f), new Action(cDisplayClass36.\u003CHandleSelection\u003Eb__30));
+
+              for (int m = 0; m <= oid; m++)
+              {
+                if (m != oid && this.ArtifactAOs[m].ArtObjectName == "TOME_BAO")
+                  oid++;
+              }
+              
+              DoArtifactZoom(this.ArtifactAOs[oid]);
+              if (this.ArtifactAOs[oid].ArtObjectName == "TOME_BAO")
+                DoArtifactZoom(this.ArtifactAOs[oid + 1]);
+
               break;
             }
-          case MenuCubeFace.Artifacts:
-            int count = this.ArtifactAOs.Count;
-            if (this.GameState.SaveData.Artifacts.Contains(ActorType.Tome))
-              --count;
-            // ISSUE: reference to a compiler-generated field
-            if (count <= cDisplayClass36.oid)
+          case MenuCubeFace.Maps:
             {
-              this.zooming = false;
-              this.zoomed = false;
-              this.GameState.MenuCubeIsZoomed = false;
-              return;
-            }
-            else
-            {
-              // ISSUE: reference to a compiler-generated field
-              for (int index = 0; index <= cDisplayClass36.oid; ++index)
+              if (GameState.SaveData.Maps.Count <= oid)
               {
-                // ISSUE: reference to a compiler-generated field
-                if (index != cDisplayClass36.oid && this.ArtifactAOs[index].ArtObjectName == "TOME_BAO")
+                this.zooming = false;
+                this.zoomed = false;
+                GameState.MenuCubeIsZoomed = false;
+                return;
+              }
+              if (this.zoomed)
+              {
+                for (int j = 0; j < 6; j++)
                 {
-                  // ISSUE: reference to a compiler-generated field
-                  ++cDisplayClass36.oid;
+                  this.Maps.Groups[oid * 6 + j].Material = new Material();
+                  this.originalMapPositions[j] = this.Maps.Groups[oid * 6 + j].Position;
                 }
               }
-              // ISSUE: reference to a compiler-generated field
-              this.DoArtifactZoom(this.ArtifactAOs[cDisplayClass36.oid]);
-              // ISSUE: reference to a compiler-generated field
-              if (this.ArtifactAOs[cDisplayClass36.oid].ArtObjectName == "TOME_BAO")
+
+              Vector2 hlPos = this.HighlightPosition[this.zoomedFace];
+              Vector3 middleOffset = (hlPos.X * zoomedFace.GetSpacing()) / 16f * zoomedFace.GetRight()
+                                   + ((hlPos.Y * zoomedFace.GetSpacing()) / 16f * Vector3.Down) + ((Vector3.Down + zoomedFace.GetRight()) * zoomedFace.GetOffset() / 16f);
+              
+              middleOffset = this.AoInstance.ArtObject.Size / 2f * (zoomedFace.GetRight() + Vector3.Down) - middleOffset;
+
+              Waiters.Interpolate(0.25, delegate (float s)
               {
-                // ISSUE: reference to a compiler-generated field
-                this.DoArtifactZoom(this.ArtifactAOs[cDisplayClass36.oid + 1]);
-                break;
-              }
-              else
-                break;
+                s = Easing.EaseOut(s, EasingType.Quadratic);
+                if (!this.zoomed)
+                  s = 1f - s;
+
+                Vector3 groupDist = Vector3.Zero;
+                for (int k = 0; k < 6; k++)
+                {
+                  Group group = this.Maps.Groups[oid * 6 + k];
+                  this.AoInstance.Material.Opacity = FezMath.Saturate(1f - (s * 1.5f));
+                  this.AoInstance.MarkDirty();
+                  group.Position = Vector3.Lerp(this.originalMapPositions[k], originalMapPositions[k] + zoomedFace.GetForward() * 12f + middleOffset, s);
+                  groupDist += group.Position;
+                }
+                groupDist /= 6f;
+
+                this.CameraManager.Center = Vector3.Lerp(this.AoInstance.Position, this.AoInstance.Position + Vector3.Transform(groupDist, this.AoInstance.Rotation), s);
+                this.CameraManager.Radius = MathHelper.Lerp(OriginalRadius, OriginalRadius / 7f, Easing.EaseIn(s, EasingType.Cubic));
+              }, delegate
+              {
+                if (!this.zoomed)
+                {
+                  for (int l = 0; l < 6; l++)
+                  {
+                    this.Maps.Groups[oid * 6 + l].Material = this.AoInstance.Material;
+                  }
+                  GameState.MenuCubeIsZoomed = false;
+                }
+                this.zooming = false;
+              });
+              break;
             }
         }
         if (this.zoomed)

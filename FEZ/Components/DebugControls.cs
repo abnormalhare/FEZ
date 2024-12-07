@@ -132,6 +132,7 @@ namespace FezGame.Components
         this.TimeService.SetHour(20, true);
       if (this.KeyboardState.GetKeyState(Keys.F12) == FezButtonState.Pressed)
         this.TimeService.SetHour(0, true);
+
       if (this.KeyboardState.GetKeyState(Keys.NumPad0) == FezButtonState.Pressed || this.KeyboardState.GetKeyState(Keys.D0) == FezButtonState.Pressed)
         this.CameraManager.PixelsPerTrixel = 1f;
       if (this.KeyboardState.GetKeyState(Keys.NumPad1) == FezButtonState.Pressed || this.KeyboardState.GetKeyState(Keys.D1) == FezButtonState.Pressed)
@@ -168,6 +169,7 @@ namespace FezGame.Components
         this.GameState.SaveData.ScoreDirty = true;
         this.GameState.OnHudElementChanged();
       }
+
       if (this.KeyboardState.GetKeyState(Keys.L) == FezButtonState.Pressed)
         this.GameState.SaveData.HasDoneHeartReboot = true;
       if (FezButtonStateExtensions.IsDown(this.KeyboardState.GetKeyState(Keys.LeftControl)) && this.KeyboardState.GetKeyState(Keys.S) == FezButtonState.Pressed)
@@ -181,8 +183,10 @@ namespace FezGame.Components
         this.BlackHoles.DisableAll();
       if (this.KeyboardState.GetKeyState(Keys.K) == FezButtonState.Pressed)
         this.BlackHoles.Randomize();
+
       if (!Fez.LongScreenshot)
         return;
+
       if (this.KeyboardState.GetKeyState(Keys.R) == FezButtonState.Pressed)
       {
         this.SM.PlayNewSong((string) null);
@@ -192,59 +196,62 @@ namespace FezGame.Components
       }
       if (this.KeyboardState.GetKeyState(Keys.T) != FezButtonState.Pressed)
         return;
-      // ISSUE: object of a compiler-generated type is created
-      // ISSUE: variable of a compiler-generated type
-      DebugControls.\u003C\u003Ec__DisplayClass5 cDisplayClass5_1 = new DebugControls.\u003C\u003Ec__DisplayClass5();
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass5_1.\u003C\u003E4__this = this;
+
       this.SM.KillSounds(0.1f);
       this.SM.PlayNewSong((string) null, 0.1f);
+
       foreach (AmbienceTrack ambienceTrack in (IEnumerable<AmbienceTrack>) this.LevelManager.AmbienceTracks)
         this.SM.MuteAmbience(ambienceTrack.Name, 0.1f);
+
       if (this.pl != null)
         ServiceHelper.RemoveComponent<PolytronLogo>(this.pl);
-      DebugControls debugControls = this;
-      PolytronLogo polytronLogo1 = new PolytronLogo(this.Game);
-      polytronLogo1.DrawOrder = 10000;
-      polytronLogo1.Opacity = 1f;
-      PolytronLogo polytronLogo2 = polytronLogo1;
-      debugControls.pl = polytronLogo2;
-      ServiceHelper.AddComponent((IGameComponent) this.pl);
-      // ISSUE: variable of a compiler-generated type
-      DebugControls.\u003C\u003Ec__DisplayClass5 cDisplayClass5_2 = cDisplayClass5_1;
-      LogoRenderer logoRenderer1 = new LogoRenderer(this.Game);
-      logoRenderer1.DrawOrder = 9999;
-      logoRenderer1.Visible = false;
-      logoRenderer1.Enabled = false;
-      LogoRenderer logoRenderer2 = logoRenderer1;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass5_2.tl = logoRenderer2;
-      // ISSUE: reference to a compiler-generated field
-      ServiceHelper.AddComponent((IGameComponent) cDisplayClass5_1.tl);
-      // ISSUE: reference to a compiler-generated field
-      ServiceHelper.AddComponent((IGameComponent) (cDisplayClass5_1.FezLogo = new FezLogo(this.Game)));
-      SoundEffect soundEffect = this.CMProvider.Global.Load<SoundEffect>("Sounds/Intro/LogoZoom");
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass5_1.FezLogo.Visible = true;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass5_1.FezLogo.Enabled = true;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass5_1.FezLogo.TransitionStarted = true;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass5_1.FezLogo.Opacity = 1f;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass5_1.FezLogo.Inverted = true;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass5_1.FezLogo.SinceStarted = 4.5f;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass5_1.FezLogo.HalfSpeed = true;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass5_1.FezLogo.Update(new GameTime());
-      SoundEffectExtensions.Emit(soundEffect);
+
+      PolytronLogo polytronLogo = new PolytronLogo(this.Game);
+      polytronLogo.DrawOrder = 10000;
+      polytronLogo.Opacity = 1f;
+      this.pl = polytronLogo;
+      ServiceHelper.AddComponent((IGameComponent)this.pl);
+
+      LogoRenderer logoRenderer = new LogoRenderer(this.Game);
+      logoRenderer.DrawOrder = 9999;
+      logoRenderer.Visible = false;
+      logoRenderer.Enabled = false;
+      LogoRenderer tl = logoRenderer;
+      ServiceHelper.AddComponent((IGameComponent)tl);
+
+      FezLogo fezLogo;
+      ServiceHelper.AddComponent((IGameComponent)(fezLogo = new FezLogo(this.Game)));
+
+      SoundEffect obj = CMProvider.Global.Load<SoundEffect>("Sounds/Intro/LogoZoom");
+
+      fezLogo.Visible = true;
+      fezLogo.Enabled = true;
+      fezLogo.TransitionStarted = true;
+      fezLogo.Opacity = 1f;
+      fezLogo.Inverted = true;
+      fezLogo.SinceStarted = 4.5f;
+      fezLogo.HalfSpeed = true;
+      fezLogo.Update(new GameTime());
+
+      SoundEffectExtensions.Emit(obj);
       SoundManager.NoMoreSounds = true;
+
       this.GameState.SkipRendering = true;
-      // ISSUE: reference to a compiler-generated method
-      Waiters.Wait(7.0, new Action(cDisplayClass5_1.\u003CUpdate\u003Eb__2));
+
+      Waiters.Wait(7.0, (Action)delegate
+      {
+        fezLogo.Visible = false;
+        tl.Visible = true;
+        Waiters.Wait(1.5, (Action)delegate
+        {
+          this.pl.Visible = true;
+          this.pl.Update(new GameTime());
+          Waiters.Wait(0.5, (Action)delegate
+          {
+            this.pl.Enabled = true;
+          });
+        });
+      });
     }
   }
 }

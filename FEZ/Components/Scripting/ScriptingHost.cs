@@ -22,6 +22,7 @@ namespace FezGame.Components.Scripting
     private Script[] levelScripts = new Script[0];
     private readonly Dictionary<string, IScriptingBase> services = new Dictionary<string, IScriptingBase>();
     private readonly List<ActiveScript> activeScripts = new List<ActiveScript>();
+    public static bool ScriptExecuted;
     private string LastLevel;
     public static ScriptingHost Instance;
 
@@ -127,99 +128,66 @@ namespace FezGame.Components.Scripting
 
     private void ProcessTrigger(ScriptTrigger trigger, Script script, int? id)
     {
-      // ISSUE: object of a compiler-generated type is created
-      // ISSUE: variable of a compiler-generated type
-      ScriptingHost.\u003C\u003Ec__DisplayClass11 cDisplayClass11 = new ScriptingHost.\u003C\u003Ec__DisplayClass11();
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass11.trigger = trigger;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass11.script = script;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass11.\u003C\u003E4__this = this;
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated field
-      if (this.GameState.Loading && cDisplayClass11.trigger.Object.Type != "Level" && cDisplayClass11.trigger.Event != "Start" || cDisplayClass11.script.Disabled)
+      if ((GameState.Loading && trigger.Object.Type != "Level" && trigger.Event != "Start") || script.Disabled)
         return;
-      int? nullable = id;
-      // ISSUE: reference to a compiler-generated field
-      int? identifier = cDisplayClass11.trigger.Object.Identifier;
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated method
-      if ((nullable.GetValueOrDefault() != identifier.GetValueOrDefault() ? 1 : (nullable.HasValue != identifier.HasValue ? 1 : 0)) != 0 || cDisplayClass11.script.Conditions != null && Enumerable.Any<ScriptCondition>((IEnumerable<ScriptCondition>) cDisplayClass11.script.Conditions, (Func<ScriptCondition, bool>) (c => !c.Check(this.services[c.Object.Type]))) || cDisplayClass11.script.OneTime && Enumerable.Any<ActiveScript>((IEnumerable<ActiveScript>) this.activeScripts, new Func<ActiveScript, bool>(cDisplayClass11.\u003CProcessTrigger\u003Eb__a)))
+
+      int? num = id;
+      int? identifier = trigger.Object.Identifier;
+
+      if (num.GetValueOrDefault() != identifier.GetValueOrDefault() || num.HasValue != identifier.HasValue
+          || (script.Conditions != null && script.Conditions.Any((ScriptCondition c) => !c.Check(this.services[c.Object.Type])))
+          || (script.OneTime && activeScripts.Any((ActiveScript x) => x.Script == script)))
         return;
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass11.activeScript = new ActiveScript(cDisplayClass11.script, cDisplayClass11.trigger);
-      // ISSUE: reference to a compiler-generated field
-      this.activeScripts.Add(cDisplayClass11.activeScript);
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated field
-      if (cDisplayClass11.script.IsWinCondition && !this.GameState.SaveData.ThisLevel.FilledConditions.ScriptIds.Contains(cDisplayClass11.script.Id))
+
+      ActiveScript activeScript = new ActiveScript(script, trigger);
+      this.activeScripts.Add(activeScript);
+
+      if (script.IsWinCondition && !GameState.SaveData.ThisLevel.FilledConditions.ScriptIds.Contains(script.Id))
       {
-        // ISSUE: reference to a compiler-generated field
-        this.GameState.SaveData.ThisLevel.FilledConditions.ScriptIds.Add(cDisplayClass11.script.Id);
-        this.GameState.SaveData.ThisLevel.FilledConditions.ScriptIds.Sort();
+        GameState.SaveData.ThisLevel.FilledConditions.ScriptIds.Add(script.Id);
+        GameState.SaveData.ThisLevel.FilledConditions.ScriptIds.Sort();
       }
-      // ISSUE: reference to a compiler-generated field
-      foreach (ScriptAction scriptAction in cDisplayClass11.script.Actions)
+
+      foreach (ScriptAction action3 in script.Actions)
       {
-        // ISSUE: object of a compiler-generated type is created
-        // ISSUE: variable of a compiler-generated type
-        ScriptingHost.\u003C\u003Ec__DisplayClass13 cDisplayClass13 = new ScriptingHost.\u003C\u003Ec__DisplayClass13();
-        // ISSUE: reference to a compiler-generated field
-        cDisplayClass13.CS\u0024\u003C\u003E8__locals12 = cDisplayClass11;
-        // ISSUE: reference to a compiler-generated field
-        cDisplayClass13.runnableAction = new RunnableAction()
-        {
-          Action = scriptAction
-        };
-        // ISSUE: reference to a compiler-generated field
-        // ISSUE: reference to a compiler-generated method
-        cDisplayClass13.runnableAction.Invocation = new Func<object>(cDisplayClass13.\u003CProcessTrigger\u003Eb__b);
-        // ISSUE: reference to a compiler-generated field
-        // ISSUE: reference to a compiler-generated field
-        cDisplayClass11.activeScript.EnqueueAction(cDisplayClass13.runnableAction);
+        RunnableAction runnableAction = new RunnableAction { Action = action3 };
+        runnableAction.Invocation = () => runnableAction.Action.Invoke.Invoke(this.services[runnableAction.Action.Object.Type], runnableAction.Action.ProcessedArguments);
+        activeScript.EnqueueAction(runnableAction);
       }
-      // ISSUE: reference to a compiler-generated field
-      if (!cDisplayClass11.script.IgnoreEndTriggers)
+
+      if (!script.IgnoreEndTriggers)
       {
-        // ISSUE: reference to a compiler-generated field
-        foreach (ScriptTrigger scriptTrigger in cDisplayClass11.script.Triggers)
+        foreach (ScriptTrigger trigger2 in script.Triggers)
         {
-          EntityTypeDescriptor entityTypeDescriptor = EntityTypes.Types[scriptTrigger.Object.Type];
-          DynamicMethodDelegate dynamicMethodDelegate = entityTypeDescriptor.Events[scriptTrigger.Event].AddEndTriggerHandler;
-          if (dynamicMethodDelegate != null)
+          EntityTypeDescriptor val = EntityTypes.Types[((ScriptPart)trigger2).Object.Type];
+          DynamicMethodDelegate addEndTriggerHandler = val.Events[trigger2.Event].AddEndTriggerHandler;
+          if (addEndTriggerHandler == null)
           {
-            if (entityTypeDescriptor.Static)
+            continue;
+          }
+          if (val.Static)
+          {
+            Action action = delegate
             {
-              // ISSUE: reference to a compiler-generated method
-              Action action = new Action(cDisplayClass11.\u003CProcessTrigger\u003Eb__c);
-              // ISSUE: reference to a compiler-generated field
-              object obj = dynamicMethodDelegate((object) this.services[cDisplayClass11.trigger.Object.Type], new object[1]
-              {
-                (object) action
-              });
-            }
-            else
+              ProcessEndTrigger(trigger, activeScript);
+            };
+            addEndTriggerHandler.Invoke((object)services[((ScriptPart)trigger).Object.Type], new object[1] { action });
+          }
+          else
+          {
+            Action<int> action2 = delegate(int i)
             {
-              // ISSUE: reference to a compiler-generated method
-              Action<int> action = new Action<int>(cDisplayClass11.\u003CProcessTrigger\u003Eb__d);
-              // ISSUE: reference to a compiler-generated field
-              object obj = dynamicMethodDelegate((object) this.services[cDisplayClass11.trigger.Object.Type], new object[1]
-              {
-                (object) action
-              });
-            }
+              ProcessEndTrigger(trigger, activeScript, i);
+            };
+            addEndTriggerHandler.Invoke((object)services[((ScriptPart)trigger).Object.Type], new object[1] { action2 });
           }
         }
       }
-      // ISSUE: reference to a compiler-generated field
-      // ISSUE: reference to a compiler-generated method
-      cDisplayClass11.activeScript.Disposed += new Action(cDisplayClass11.\u003CProcessTrigger\u003Eb__e);
+      activeScript.Disposed += delegate
+      {
+        ScriptService.OnComplete(activeScript.Script.Id);
+      };
+      ScriptExecuted = true;
     }
 
     private static void ProcessEndTrigger(ScriptTrigger trigger, ActiveScript script)

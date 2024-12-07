@@ -28,9 +28,9 @@ namespace FezGame.Structure
       {
         // ISSUE: object of a compiler-generated type is created
         // ISSUE: variable of a compiler-generated type
-        SaveSlotSelectionLevel.\u003C\u003Ec__DisplayClassa cDisplayClassa = new SaveSlotSelectionLevel.\u003C\u003Ec__DisplayClassa();
+        SaveSlotSelectionLevel.<>c__DisplayClassa cDisplayClassa = new SaveSlotSelectionLevel.<>c__DisplayClassa();
         // ISSUE: reference to a compiler-generated field
-        cDisplayClassa.\u003C\u003E4__this = this;
+        cDisplayClassa.<>4__this = this;
         // ISSUE: reference to a compiler-generated field
         cDisplayClassa.slot = this.Slots[index] = new SaveSlotInfo()
         {
@@ -47,9 +47,9 @@ namespace FezGame.Structure
         {
           // ISSUE: object of a compiler-generated type is created
           // ISSUE: variable of a compiler-generated type
-          SaveSlotSelectionLevel.\u003C\u003Ec__DisplayClassc cDisplayClassc = new SaveSlotSelectionLevel.\u003C\u003Ec__DisplayClassc();
+          SaveSlotSelectionLevel.<>c__DisplayClassc cDisplayClassc = new SaveSlotSelectionLevel.<>c__DisplayClassc();
           // ISSUE: reference to a compiler-generated field
-          cDisplayClassc.CS\u0024\u003C\u003E8__localsb = cDisplayClassa;
+          cDisplayClassc.CS\u0024<>8__localsb = cDisplayClassa;
           // ISSUE: reference to a compiler-generated field
           cDisplayClassc.saveData = (SaveData) null;
           // ISSUE: reference to a compiler-generated method

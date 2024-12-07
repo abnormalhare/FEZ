@@ -34,9 +34,9 @@ namespace FezGame.Structure
     {
       // ISSUE: object of a compiler-generated type is created
       // ISSUE: variable of a compiler-generated type
-      SaveManagementLevel.\u003C\u003Ec__DisplayClassd cDisplayClassd = new SaveManagementLevel.\u003C\u003Ec__DisplayClassd();
+      SaveManagementLevel.<>c__DisplayClassd cDisplayClassd = new SaveManagementLevel.<>c__DisplayClassd();
       // ISSUE: reference to a compiler-generated field
-      cDisplayClassd.\u003C\u003E4__this = this;
+      cDisplayClassd.<>4__this = this;
       base.Initialize();
       this.FontManager = ServiceHelper.Get<IFontManager>();
       this.GameState = ServiceHelper.Get<IGameStateManager>();

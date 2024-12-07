@@ -184,7 +184,7 @@ namespace FezGame.Components
                       {
                         // ISSUE: object of a compiler-generated type is created
                         // ISSUE: variable of a compiler-generated type
-                        SuckBlocksHost.\u003C\u003Ec__DisplayClassb cDisplayClassb = new SuckBlocksHost.\u003C\u003Ec__DisplayClassb();
+                        SuckBlocksHost.<>c__DisplayClassb cDisplayClassb = new SuckBlocksHost.<>c__DisplayClassb();
                         SuckBlocksHost.DisableTrile(instance);
                         suckBlockState.Action = SuckBlocksHost.SuckBlockAction.Accepted;
                         if (this.eCratePush.Cue.State != SoundState.Paused)

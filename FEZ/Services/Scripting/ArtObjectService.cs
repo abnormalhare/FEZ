@@ -165,25 +165,31 @@ namespace FezGame.Services.Scripting
 
     public LongRunningAction Pulse(int id, string textureName)
     {
-      // ISSUE: object of a compiler-generated type is created
-      // ISSUE: variable of a compiler-generated type
-      ArtObjectService.\u003C\u003Ec__DisplayClass12 cDisplayClass12 = new ArtObjectService.\u003C\u003Ec__DisplayClass12();
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass12.\u003C\u003E4__this = this;
-      // ISSUE: reference to a compiler-generated field
-      cDisplayClass12.lightPlane = new BackgroundPlane(this.LevelMaterializer.StaticPlanesMesh, textureName, false)
+      BackgroundPlane lightPlane = new BackgroundPlane(LevelMaterializer.StaticPlanesMesh, textureName, false)
       {
-        Position = this.LevelManager.ArtObjects[id].Position - FezMath.ForwardVector(this.CameraManager.Viewpoint) * 10f,
-        Rotation = this.CameraManager.Rotation,
+        Position = LevelManager.ArtObjects[id].Position - FezMath.ForwardVector(CameraManager.Viewpoint),
+        Rotation = CameraManager.Rotation,
         AllowOverbrightness = true,
         LightMap = true,
         AlwaysOnTop = true,
         PixelatedLightmap = true
       };
-      // ISSUE: reference to a compiler-generated field
-      this.LevelManager.AddPlane(cDisplayClass12.lightPlane);
-      // ISSUE: reference to a compiler-generated method
-      return new LongRunningAction(new Func<float, float, bool>(cDisplayClass12.\u003CPulse\u003Eb__11));
+      LevelManager.AddPlane(lightPlane);
+
+      return new LongRunningAction(delegate(float _, float sinceStarted)
+      {
+        float saturation = FezMath.Saturate(sinceStarted / 2f);
+        float satEasing = Easing.EaseOut((double)FezMath.Saturate(saturation), EasingType.Quadratic);
+        lightPlane.Filter = new Color(1f - satEasing, 1f - satEasing, 1f - satEasing);
+
+        satEasing = Easing.EaseOut((double)FezMath.Saturate(saturation), EasingType.Quartic);
+        lightPlane.Scale = new Vector3(1f + satEasing * 10f);
+        if (satEasing == 1f)
+        {
+          LevelManager.RemovePlane(lightPlane);
+        }
+        return satEasing == 1f;
+      });
     }
 
     public LongRunningAction Say(int id, string text, bool zuish)

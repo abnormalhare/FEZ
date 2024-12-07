@@ -74,7 +74,7 @@ namespace FezGame.Services.Scripting
     {
       // ISSUE: object of a compiler-generated type is created
       // ISSUE: variable of a compiler-generated type
-      CameraService.\u003C\u003Ec__DisplayClass2 cDisplayClass2 = new CameraService.\u003C\u003Ec__DisplayClass2();
+      CameraService.<>c__DisplayClass2 cDisplayClass2 = new CameraService.<>c__DisplayClass2();
       Color color = Util.FromName(colorName);
       // ISSUE: reference to a compiler-generated field
       cDisplayClass2.component = new ScreenFade(ServiceHelper.Game)
@@ -93,7 +93,7 @@ namespace FezGame.Services.Scripting
     {
       // ISSUE: object of a compiler-generated type is created
       // ISSUE: variable of a compiler-generated type
-      CameraService.\u003C\u003Ec__DisplayClass6 cDisplayClass6 = new CameraService.\u003C\u003Ec__DisplayClass6();
+      CameraService.<>c__DisplayClass6 cDisplayClass6 = new CameraService.<>c__DisplayClass6();
       Color color = Util.FromName(colorName);
       // ISSUE: reference to a compiler-generated field
       cDisplayClass6.component = new ScreenFade(ServiceHelper.Game)

@@ -294,18 +294,18 @@ namespace FezGame.Components
     {
       // ISSUE: object of a compiler-generated type is created
       // ISSUE: variable of a compiler-generated type
-      TrialAndAwards.\u003C\u003Ec__DisplayClass19 cDisplayClass19 = new TrialAndAwards.\u003C\u003Ec__DisplayClass19();
+      TrialAndAwards.<>c__DisplayClass19 cDisplayClass19 = new TrialAndAwards.<>c__DisplayClass19();
       // ISSUE: reference to a compiler-generated field
       cDisplayClass19.localizedString = localizedString;
       // ISSUE: reference to a compiler-generated field
-      cDisplayClass19.\u003C\u003E4__this = this;
+      cDisplayClass19.<>4__this = this;
       if (this.GameState.ActiveScroll != null)
       {
         // ISSUE: object of a compiler-generated type is created
         // ISSUE: variable of a compiler-generated type
-        TrialAndAwards.\u003C\u003Ec__DisplayClass1b cDisplayClass1b = new TrialAndAwards.\u003C\u003Ec__DisplayClass1b();
+        TrialAndAwards.<>c__DisplayClass1b cDisplayClass1b = new TrialAndAwards.<>c__DisplayClass1b();
         // ISSUE: reference to a compiler-generated field
-        cDisplayClass1b.CS\u0024\u003C\u003E8__locals1a = cDisplayClass19;
+        cDisplayClass1b.CS\u0024<>8__locals1a = cDisplayClass19;
         TextScroll textScroll = this.GameState.ActiveScroll;
         while (textScroll.NextScroll != null)
           textScroll = textScroll.NextScroll;

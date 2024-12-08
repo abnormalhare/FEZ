@@ -26,7 +26,7 @@ public class CachedLeaderboard
 
 	public LeaderboardView View { get; private set; }
 
-	public SteamUser ActiveGamer { get; set; }
+	public FezGame.Services.SteamUser ActiveGamer { get; set; }
 
 	public bool InError
 	{
@@ -101,16 +101,16 @@ public class CachedLeaderboard
 		}
 	}
 
-	public CachedLeaderboard(SteamUser activeGamer, int virtualPageSize)
+	public CachedLeaderboard(FezGame.Services.SteamUser activeGamer, int virtualPageSize)
 	{
 		//IL_0035: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003a: Unknown result type (might be due to invalid IL or missing references)
 		//IL_003b: Unknown result type (might be due to invalid IL or missing references)
 		this.virtualPageSize = virtualPageSize;
 		ActiveGamer = activeGamer;
-		CallResult<LeaderboardFindResult_t> obj = new CallResult<LeaderboardFindResult_t>((APIDispatchDelegate<LeaderboardFindResult_t>)OnReceiveLeaderboard);
+		CallResult<LeaderboardFindResult_t> obj = new CallResult<LeaderboardFindResult_t>(OnReceiveLeaderboard);
 		SteamAPICall_t val = SteamUserStats.FindLeaderboard("CompletionPercentage");
-		obj.Set(val, (APIDispatchDelegate<LeaderboardFindResult_t>)null);
+		obj.Set(val, null);
 	}
 
 	private void OnReceiveLeaderboard(LeaderboardFindResult_t result, bool bIOFailure)
@@ -170,7 +170,7 @@ public class CachedLeaderboard
 					LeaderboardEntry_t item = default(LeaderboardEntry_t);
 					for (int num = result.m_cEntryCount - 1; num >= 0; num--)
 					{
-						SteamUserStats.GetDownloadedLeaderboardEntry(result.m_hSteamLeaderboardEntries, num, ref item, (int[])null, 0);
+						SteamUserStats.GetDownloadedLeaderboardEntry(result.m_hSteamLeaderboardEntries, num, out item, (int[])null, 0);
 						cachedEntries.Insert(0, item);
 					}
 					startIndex += result.m_cEntryCount;
@@ -181,7 +181,7 @@ public class CachedLeaderboard
 					LeaderboardEntry_t item2 = default(LeaderboardEntry_t);
 					for (int i = 0; i < result.m_cEntryCount; i++)
 					{
-						SteamUserStats.GetDownloadedLeaderboardEntry(result.m_hSteamLeaderboardEntries, i, ref item2, (int[])null, 0);
+						SteamUserStats.GetDownloadedLeaderboardEntry(result.m_hSteamLeaderboardEntries, i, out item2, (int[])null, 0);
 						cachedEntries.Add(item2);
 					}
 				}
@@ -221,27 +221,27 @@ public class CachedLeaderboard
 		Reading = true;
 		View = leaderboardView;
 		callback = onFinished;
-		CallResult<LeaderboardScoresDownloaded_t> val = new CallResult<LeaderboardScoresDownloaded_t>((APIDispatchDelegate<LeaderboardScoresDownloaded_t>)CacheEntries);
+		CallResult<LeaderboardScoresDownloaded_t> val = new CallResult<LeaderboardScoresDownloaded_t>(CacheEntries);
 		switch (View)
 		{
 		case LeaderboardView.Friends:
 		{
 			SteamAPICall_t val2 = SteamUserStats.DownloadLeaderboardEntries(leaderboard, (ELeaderboardDataRequest)2, 0, 100);
-			val.Set(val2, (APIDispatchDelegate<LeaderboardScoresDownloaded_t>)null);
+			val.Set(val2, null);
 			startIndex = 0;
 			break;
 		}
 		case LeaderboardView.MyScore:
 		{
 			SteamAPICall_t val2 = SteamUserStats.DownloadLeaderboardEntries(leaderboard, (ELeaderboardDataRequest)1, -50, 50);
-			val.Set(val2, (APIDispatchDelegate<LeaderboardScoresDownloaded_t>)null);
+			val.Set(val2, null);
 			startIndex = 50 - virtualPageSize / 2 + 1;
 			break;
 		}
 		case LeaderboardView.Overall:
 		{
 			SteamAPICall_t val2 = SteamUserStats.DownloadLeaderboardEntries(leaderboard, (ELeaderboardDataRequest)0, 1, 100);
-			val.Set(val2, (APIDispatchDelegate<LeaderboardScoresDownloaded_t>)null);
+			val.Set(val2, null);
 			startIndex = 0;
 			break;
 		}
@@ -273,9 +273,9 @@ public class CachedLeaderboard
 			return;
 		}
 		callback = onFinished;
-		CallResult<LeaderboardScoresDownloaded_t> obj = new CallResult<LeaderboardScoresDownloaded_t>((APIDispatchDelegate<LeaderboardScoresDownloaded_t>)CacheEntriesUp);
+		CallResult<LeaderboardScoresDownloaded_t> obj = new CallResult<LeaderboardScoresDownloaded_t>(CacheEntriesUp);
 		SteamAPICall_t val = SteamUserStats.DownloadLeaderboardEntries(leaderboard, (ELeaderboardDataRequest)0, cachedEntries[0].m_nGlobalRank - 100, cachedEntries[0].m_nGlobalRank - 1);
-		obj.Set(val, (APIDispatchDelegate<LeaderboardScoresDownloaded_t>)null);
+		obj.Set(val, null);
 	}
 
 	public void PageDown(Action onFinished)
@@ -310,8 +310,8 @@ public class CachedLeaderboard
 		}
 		startIndex += virtualPageSize;
 		callback = onFinished;
-		CallResult<LeaderboardScoresDownloaded_t> obj = new CallResult<LeaderboardScoresDownloaded_t>((APIDispatchDelegate<LeaderboardScoresDownloaded_t>)CacheEntriesDown);
+		CallResult<LeaderboardScoresDownloaded_t> obj = new CallResult<LeaderboardScoresDownloaded_t>(CacheEntriesDown);
 		SteamAPICall_t val = SteamUserStats.DownloadLeaderboardEntries(leaderboard, (ELeaderboardDataRequest)0, cachedEntries[cachedEntries.Count - 1].m_nGlobalRank + 1, cachedEntries[cachedEntries.Count - 1].m_nGlobalRank + 100);
-		obj.Set(val, (APIDispatchDelegate<LeaderboardScoresDownloaded_t>)null);
+		obj.Set(val, null);
 	}
 }

@@ -281,9 +281,9 @@ public class GameStateManager : EngineStateManager, IGameStateManager, IEngineSt
 		//IL_0031: Unknown result type (might be due to invalid IL or missing references)
 		if (SaveData.ScoreDirty && !Fez.NoSteamworks)
 		{
-			CallResult<LeaderboardFindResult_t> obj = new CallResult<LeaderboardFindResult_t>((APIDispatchDelegate<LeaderboardFindResult_t>)OnLeaderboardFound);
+			CallResult<LeaderboardFindResult_t> obj = new CallResult<LeaderboardFindResult_t>(OnLeaderboardFound);
 			SteamAPICall_t val = SteamUserStats.FindLeaderboard("CompletionPercentage");
-			obj.Set(val, (APIDispatchDelegate<LeaderboardFindResult_t>)null);
+			obj.Set(val, null);
 		}
 	}
 

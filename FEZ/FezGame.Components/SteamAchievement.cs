@@ -11,7 +11,7 @@ public class SteamAchievement
 		get
 		{
 			bool result = default(bool);
-			SteamUserStats.GetAchievement(AchievementName, ref result);
+			SteamUserStats.GetAchievement(AchievementName, out result);
 			return result;
 		}
 	}

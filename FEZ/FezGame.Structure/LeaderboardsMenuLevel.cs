@@ -268,7 +268,7 @@ internal class LeaderboardsMenuLevel : MenuLevel
 					menuItem.SuffixText = () => e.m_nGlobalRank + ". " + personaName + " : " + Math.Round((float)e.m_nScore / 32f * 100f, 1) + " %";
 					menuItem.Hovered = !flag2;
 					flag2 = true;
-					if ((leaderboard.View == LeaderboardView.MyScore || leaderboard.View == LeaderboardView.Friends) && e.m_steamIDUser == SteamUser.GetSteamID())
+					if ((leaderboard.View == LeaderboardView.MyScore || leaderboard.View == LeaderboardView.Friends) && e.m_steamIDUser == Steamworks.SteamUser.GetSteamID())
 					{
 						foreach (MenuItem item in Items)
 						{

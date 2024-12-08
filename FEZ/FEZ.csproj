@@ -23,7 +23,7 @@
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\FEZ\FNA.dll</HintPath>
 		</Reference>
 		<Reference Include="FezEngine">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\FEZ\FezEngine.dll</HintPath>
+			<HintPath>D:\Storage\Documents\GitHub\FEZ-master\FezEngine\bin\Debug\net40\FezEngine.dll</HintPath>
 		</Reference>
 		<Reference Include="Steamworks.NET">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\FEZ\Steamworks.NET.dll</HintPath>
